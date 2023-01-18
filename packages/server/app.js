@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 
+const dbConnect = require("./db/dbConnect");
+
 // body parser configuration
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,5 +13,6 @@ app.get("/", (request, response, next) => {
     next();
 });
 
+dbConnect();
 
 module.exports = app;
