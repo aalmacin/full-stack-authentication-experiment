@@ -17,5 +17,32 @@ app.get("/", (request, response, next) => {
     next();
 });
 
+app.post("/register", (req, res) => {
+    bcrypt.hash(req.body.password, 10)
+        .then((hash) => {
+            const user = new User({
+                email: req.body.email,
+                password: hash
+            });
+            user.save().then(result => {
+                res.status(201).json({
+                    message: "User created!",
+                    result: result
+                });
+            }).catch(err => {
+                res.status(500).json({
+                    message: "Error creating user!",
+                    error: err
+                });
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: "Error while hashing password",
+                err
+            });
+        });
+})
+
 
 module.exports = app;
