@@ -3,6 +3,10 @@ const app = express();
 const bodyParser = require('body-parser');
 
 const dbConnect = require("./db/dbConnect");
+dbConnect();
+
+const bcrypt = require("bcrypt");
+const User = require("./db/userModel");
 
 // body parser configuration
 app.use(bodyParser.json());
@@ -13,6 +17,5 @@ app.get("/", (request, response, next) => {
     next();
 });
 
-dbConnect();
 
 module.exports = app;
