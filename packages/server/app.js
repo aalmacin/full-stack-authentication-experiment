@@ -11,10 +11,10 @@ const User = require("./db/userModel");
 
 // body parser configuration
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.get("/", (request, response, next) => {
-    response.json({ message: "Hey! This is your server response!" });
+    response.json({message: "Hey! This is your server response!"});
     next();
 });
 
@@ -46,7 +46,7 @@ app.post("/register", (req, res) => {
 })
 
 app.post("/login", (req, res) => {
-    User.findOne({ email: req.body.email })
+    User.findOne({email: req.body.email})
         .then(user => {
             bcrypt.compare(req.body.password, user.password)
                 .then(passwordCheck => {
@@ -62,6 +62,18 @@ app.post("/login", (req, res) => {
                         err
                     });
                 });
+
+            // Create JWT Token
+            const token = jwt.sign(
+                {userEmail: user.email, userId: user._id},
+                "RANDOM_TOKEN",
+                {expiresIn: "24h"}
+            );
+            res.status(200).json({
+                message: "Auth successful",
+                email: user.email,
+                token
+            });
         })
         .catch(err => {
             res.status(500).json({
