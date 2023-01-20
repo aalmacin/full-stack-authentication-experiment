@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const jwt = require("jsonwebtoken");
 const bodyParser = require('body-parser');
 
 const dbConnect = require("./db/dbConnect");
@@ -43,6 +44,32 @@ app.post("/register", (req, res) => {
             });
         });
 })
+
+app.post("/login", (req, res) => {
+    User.findOne({ email: req.body.email })
+        .then(user => {
+            bcrypt.compare(req.body.password, user.password)
+                .then(passwordCheck => {
+                    if (!passwordCheck) {
+                        return res.status(400).json({
+                            message: "Auth failed!"
+                        });
+                    }
+                })
+                .catch(err => {
+                    res.status(401).json({
+                        message: "Auth failed",
+                        err
+                    });
+                });
+        })
+        .catch(err => {
+            res.status(500).json({
+                message: "Error while hashing password",
+                err
+            });
+        });
+});
 
 
 module.exports = app;
