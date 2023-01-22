@@ -3,11 +3,14 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const bodyParser = require('body-parser');
 
+require('dotenv').config();
+
 const dbConnect = require("./db/dbConnect");
 dbConnect();
 
 const bcrypt = require("bcrypt");
 const User = require("./db/userModel");
+const auth = require("./auth");
 
 // body parser configuration
 app.use(bodyParser.json());
@@ -66,7 +69,7 @@ app.post("/login", (req, res) => {
             // Create JWT Token
             const token = jwt.sign(
                 {userEmail: user.email, userId: user._id},
-                "RANDOM_TOKEN",
+                process.env.AUTH_TOKEN,
                 {expiresIn: "24h"}
             );
             res.status(200).json({
@@ -81,6 +84,16 @@ app.post("/login", (req, res) => {
                 err
             });
         });
+});
+
+// free endpoint
+app.get("/free-endpoint", (request, response) => {
+    response.json({ message: "You are free to access me anytime" });
+});
+
+// authentication endpoint
+app.get("/auth-endpoint", auth, (request, response) => {
+    response.json({ message: "You are authorized to access me" });
 });
 
 
